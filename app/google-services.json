@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1075766046971",
+    "firebase_url": "https://fbno-c7bf9.firebaseio.com",
+    "project_id": "fbno-c7bf9",
+    "storage_bucket": "fbno-c7bf9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075766046971:android:8efabc39be8b53ee",
+        "android_client_info": {
+          "package_name": "com.example.noti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1075766046971-c6b0499m0r3car48a63v7f4iflm061qo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.noti",
+            "certificate_hash": "b3685c88f20e4d853d53d454a077c0f0824c78aa"
+          }
+        },
+        {
+          "client_id": "1075766046971-b8m4vpehnf1jk3uj78hgih9hohoh8did.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHoUQN5gV7FtnzcymODxXFBMdny1MUnvI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1075766046971-b8m4vpehnf1jk3uj78hgih9hohoh8did.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

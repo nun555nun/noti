@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_camera"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="หน้าหลัก" />
+        <item
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="เทส1" />
+        <item
+            android:id="@+id/nav_slideshow"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="เทส2" />
+
+    </group>
+
+    <item android:title="Account">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="ตั้งค่าบัญชี" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="ออกจากระบบ" />
+        </menu>
+
+    </item>
+    <item android:title="Item">
+        <menu>
+            <item
+                android:id="@+id/nav_item1"
+                android:title="Item"
+                android:icon="@drawable/ic_one"/>
+            <item
+                android:id="@+id/nav_item2"
+                android:title="Item"
+                android:icon="@drawable/ic_two"/>
+        </menu>
+    </item>
+</menu>
