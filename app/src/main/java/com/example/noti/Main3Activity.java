@@ -134,10 +134,8 @@ public class Main3Activity extends AppCompatActivity
             Intent i = new Intent(Main3Activity.this, MainActivity.class);
             startActivity(i);
         } else if (id == R.id.nav_share) {
-            homeFragment fragment = new homeFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fram, fragment);
-            fragmentTransaction.commit();
+            Intent i = new Intent(Main3Activity.this, Account.class);
+            startActivity(i);
         } else if (id == R.id.nav_send) {
 
             new AlertDialog.Builder(Main3Activity.this)

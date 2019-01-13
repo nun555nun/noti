@@ -58,7 +58,8 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".listtest" />
-        <activity android:name=".ResetPassword"></activity>
+        <activity android:name=".ResetPassword" />
+        <activity android:name=".Account"></activity>
     </application>
 
 </manifest>
