@@ -83,11 +83,11 @@ public class login extends AppCompatActivity {
                     editTextemail.requestFocus();
                 }
                 if (password.isEmpty()) {
-                    editTextpass.setError("โปรดกรอก password");
+                    editTextpass.setError("ตัวอักษรอย่างน้อย6ตัวขึ้นไป");
                     editTextpass.requestFocus();
                 }
                 if (password.length() < 6) {
-                    editTextpass.setError("ตัวอักษรต้องอย่างน้อย6ตัว");
+                    editTextpass.setError("ตัวอักษรอย่างน้อย6ตัวขึ้นไป");
                     editTextpass.requestFocus();
                 }
                 if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {

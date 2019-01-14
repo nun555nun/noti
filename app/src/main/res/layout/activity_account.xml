@@ -31,21 +31,38 @@
                     android:id="@+id/textView11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_marginTop="8dp"
                     android:text="E-mail"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/email_text_view"
-                    android:layout_width="wrap_content"
+                <Button
+                    android:id="@+id/edit_email_button"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:background="@drawable/button_shape_default"
+                    android:text="edit"
+                    app:layout_constraintBottom_toBottomOf="@+id/email_edit_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/email_edit_text" />
+
+                <EditText
+                    android:id="@+id/email_edit_text"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="example@test.com"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:ems="10"
+                    android:hint="example@mail.com"
+                    android:inputType="textEmailAddress"
+                    app:layout_constraintEnd_toStartOf="@+id/edit_email_button"
                     app:layout_constraintStart_toStartOf="@+id/textView11"
                     app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
             </android.support.constraint.ConstraintLayout>
 
             <android.support.constraint.ConstraintLayout
@@ -65,8 +82,8 @@
                     android:id="@+id/textView13"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_marginTop="8dp"
                     android:text="Uid"
                     app:layout_constraintStart_toStartOf="parent"
@@ -102,8 +119,8 @@
                     android:id="@+id/username_edit_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
                     android:ems="10"
                     android:hint="Username"
                     android:inputType="textPersonName"
@@ -113,10 +130,11 @@
 
                 <Button
                     android:id="@+id/edit_username_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:background="@drawable/button_shape_default"
                     android:text="edit"
                     app:layout_constraintBottom_toBottomOf="@+id/username_edit_text"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -126,8 +144,8 @@
                     android:id="@+id/textView15"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_marginTop="8dp"
                     android:text="Username"
                     app:layout_constraintStart_toStartOf="parent"
@@ -174,8 +192,8 @@
                     android:id="@+id/textView17"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_marginLeft="4dp"
                     android:layout_marginTop="8dp"
                     android:text="Password"
                     app:layout_constraintStart_toStartOf="parent"
@@ -183,10 +201,11 @@
 
                 <Button
                     android:id="@+id/edit_pass_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
+                    android:layout_width="60dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
+                    android:background="@drawable/button_shape_default"
                     android:text="edit"
                     app:layout_constraintBottom_toBottomOf="@+id/password_edit_text"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -196,16 +215,30 @@
                     android:id="@+id/password_edit_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginRight="8dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginRight="4dp"
                     android:ems="10"
                     android:hint="password"
-                    android:inputType="textPersonName"
+                    android:inputType="textPassword"
                     app:layout_constraintEnd_toStartOf="@+id/edit_pass_button"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toStartOf="@+id/textView17"
                     app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
+                <TextView
+                    android:id="@+id/visible_pass"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/ic_visibility_off_black_24dp"
+                    android:text="1"
+                    android:textColor="#00fffefe"
+                    app:layout_constraintBottom_toBottomOf="@+id/password_edit_text"
+                    app:layout_constraintEnd_toEndOf="@+id/password_edit_text"
+                    app:layout_constraintTop_toTopOf="@+id/password_edit_text" />
             </android.support.constraint.ConstraintLayout>
+
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 
