@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
 import android.view.View;
 import android.view.animation.Animation;
@@ -14,19 +17,12 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.Map;
 
 public class login extends AppCompatActivity {
     private EditText editTextemail;
@@ -39,25 +35,67 @@ public class login extends AppCompatActivity {
     Animation fromBottom;
     public TextView forgetText;
     TextView regiter;
+    TextView tv_pass;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        fromBottom = AnimationUtils.loadAnimation(this,R.anim.from_bottom);
+        fromBottom = AnimationUtils.loadAnimation(this, R.anim.from_bottom);
 
-        editTextemail = (EditText) findViewById(R.id.eemail);
-        editTextpass = (EditText) findViewById(R.id.epass);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        buttonlogin = (Button) findViewById(R.id.buttonlogin);
+        editTextemail = findViewById(R.id.eemail);
+        editTextpass = findViewById(R.id.epass);
+        progressBar = findViewById(R.id.progressBar);
+        buttonlogin = findViewById(R.id.buttonlogin);
         forgetText = findViewById(R.id.forget_text_view);
-        regiter = findViewById(R.id.textView8);
+        regiter = findViewById(R.id.register_text_view);
+
+        tv_pass = findViewById(R.id.pass_show);
+        tv_pass.setVisibility(View.GONE);
 
         editTextemail.setAnimation(fromBottom);
         editTextpass.setAnimation(fromBottom);
         buttonlogin.setAnimation(fromBottom);
         forgetText.setAnimation(fromBottom);
         regiter.setAnimation(fromBottom);
+        tv_pass.setAnimation(fromBottom);
+
+        editTextpass.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (editTextpass.getText().length() > 0) {
+                    tv_pass.setVisibility(View.VISIBLE);
+                } else {
+                    tv_pass.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        tv_pass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tv_pass.getText().equals("1")){
+                    tv_pass.setText("0");
+                    editTextpass.setTransformationMethod(null);
+                    tv_pass.setBackgroundResource(R.drawable.ic_visibility_black_24dp);
+                }
+                else{
+                    tv_pass.setText("1");
+                    editTextpass.setTransformationMethod(new PasswordTransformationMethod());
+                    tv_pass.setBackgroundResource(R.drawable.ic_visibility_off_black_24dp);
+                }
+            }
+        });
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading.....");
@@ -94,7 +132,7 @@ public class login extends AppCompatActivity {
                     editTextemail.setError("โปรดระบุ email ให้ถูกต้อง");
                     editTextemail.requestFocus();
                 }
-                if (!email.isEmpty() && password.length()>=6) {
+                if (!email.isEmpty() && password.length() >= 6) {
                     progressDialog.show();
                     auth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(login.this, new OnCompleteListener<AuthResult>() {
@@ -115,7 +153,7 @@ public class login extends AppCompatActivity {
             }
         });
 
-       regiter.setOnClickListener(new View.OnClickListener() {
+        regiter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(login.this, loginfirebase.class);
@@ -127,7 +165,7 @@ public class login extends AppCompatActivity {
         forgetText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(login.this,ResetPassword.class);
+                Intent i = new Intent(login.this, ResetPassword.class);
                 startActivity(i);
 
             }
