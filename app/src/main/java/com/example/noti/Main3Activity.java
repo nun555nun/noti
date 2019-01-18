@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
@@ -16,6 +15,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,14 +27,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class Main3Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    public DatabaseReference testapp;
+    public DatabaseReference dbRef;
     private FirebaseAuth auth;
     private FirebaseDatabase database;
-
+    AlertDialog dialog;
+    EditText etID;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,14 +47,36 @@ public class Main3Activity extends AppCompatActivity
 
         database = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
-        testapp = database.getReference();
+        dbRef = database.getReference();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(Main3Activity.this);
+                View mview = getLayoutInflater().inflate(R.layout.dialog_add,null);
+
+                EditText etName = mview.findViewById(R.id.et_bin_name);
+                etID = mview.findViewById(R.id.et_bin_id);
+                TextView tvStartDate = mview.findViewById(R.id.tv_start_date);
+
+                Button addButton = mview.findViewById(R.id.add_button);
+
+                addButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        checkData();
+
+                    }
+                });
+                mBuilder.setView(mview);
+                dialog = mBuilder.create();
+                dialog.show();
+
+               /* Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
             }
         });
 
@@ -67,8 +92,8 @@ public class Main3Activity extends AppCompatActivity
         View navHeaderView = navigationView.getHeaderView(0);
         final TextView Emailtextview = navHeaderView.findViewById(R.id.textEmail);
         final TextView Nametextview = navHeaderView.findViewById(R.id.textName);
-        testapp = database.getReference("User").child(auth.getUid());
-        testapp.addValueEventListener(new ValueEventListener() {
+        dbRef = database.getReference("User").child(auth.getUid());
+        dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Map map = (Map) dataSnapshot.getValue();
@@ -91,6 +116,77 @@ public class Main3Activity extends AppCompatActivity
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fram, fragment);
         fragmentTransaction.commit();
+
+    }
+
+    private void checkData() {
+
+        dbRef = FirebaseDatabase.getInstance().getReference("bin/");
+
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean check= false;
+                for(DataSnapshot ds :dataSnapshot.getChildren()){
+                    if(ds.getKey().equals(etID.getText().toString())){
+                       check =true;
+                       break;
+                    }
+                }
+                if(check){
+                    setBinId();
+                }
+                else{
+                    etID.setText("");
+                    Toast.makeText(Main3Activity.this,"ไม่มี รหัสถังนี้ในระบบ หรือ ถังยังไม่ได้เปิดใช้",Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void setBinId() {
+        dbRef = FirebaseDatabase.getInstance().getReference("User/" + auth.getCurrentUser().getUid() + "/bin");
+
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Boolean check = true;
+                int count = (int) dataSnapshot.getChildrenCount();
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    Map map = (Map) ds.getValue();
+                    String binID = String.valueOf(map.get("binid"));
+                    if(binID.equals(etID.getText().toString())){
+                        check = false;
+                        break;
+                    }
+                }
+                if(check){
+                    Map binId = new HashMap();
+                    binId.put("binid",etID.getText().toString());
+                    dbRef.push().setValue(binId);
+                    Toast.makeText(Main3Activity.this,"เพิ่มถังเรียบร้อย",Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    dbRef.removeEventListener(this);
+                }
+                else {
+                    dbRef.removeEventListener(this);
+                    etID.setText("");
+                    Toast.makeText(Main3Activity.this,"คุณเคยเพิ่มถังนี้ไปแล้ว",Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
     }
 
@@ -140,8 +236,8 @@ public class Main3Activity extends AppCompatActivity
                     .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            testapp = database.getReference("User").child(auth.getUid());
-                            testapp.addValueEventListener(new ValueEventListener() {
+                            dbRef = database.getReference("User").child(auth.getUid());
+                            dbRef.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     Map map = (Map) dataSnapshot.getValue();

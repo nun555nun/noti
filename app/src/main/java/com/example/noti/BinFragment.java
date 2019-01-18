@@ -31,8 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 /**
+
  * A simple {@link Fragment} subclass.
  */
 public class BinFragment extends Fragment {
@@ -43,6 +43,7 @@ public class BinFragment extends Fragment {
     FirebaseAuth auth;
     ArrayList<String> binArrylist;
     LayoutAnimationController controller;
+
     public BinFragment() {
         // Required empty public constructor
     }
@@ -62,7 +63,7 @@ public class BinFragment extends Fragment {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Loading.....");
         progressDialog.setTitle("กำลังโหลดข้อมูล");
-
+        progressDialog.show();
 
         return view;
     }
@@ -99,7 +100,7 @@ public class BinFragment extends Fragment {
                     listViewBin.setAdapter(adapter);
                     listViewBin.setLayoutAnimation(controller);
                     listViewBin.scheduleLayoutAnimation();
-controller=null;
+                    controller = null;
                     for (int i = 0; i < userBinList.size(); i++) {
                         Log.v("test", userBinList.get(i).getBinID());
                     }
@@ -139,23 +140,24 @@ controller=null;
                     binArrylist.add(bin);
                 }
                 if (binArrylist.size() > 0) {
-                    progressDialog.show();
-                    controller =AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
+
+                    controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
                     setAdaptor();
-                }
-                else {
+                } else {
+                    progressDialog.cancel();
+                    listViewBin.setAdapter(null);
                     new AlertDialog.Builder(getContext())
-                            .setTitle("ตอนนี้คุณไม่ได้ทำการเพิ่มถังเลย ต้องการเพิ่มเลยหรือไม่")
+                            .setMessage("ตอนนี้คุณไม่ได้ทำการเชื่อมต่อถัง คุณต้องการเพิ่มถังตอนนี้หรือไม่")
                             .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(getContext(),"ได้ทำการเพิ่มถังเรียบร้อย",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), "ได้ทำการเพิ่มถังเรียบร้อย", Toast.LENGTH_LONG).show();
                                 }
                             })
                             .setNegativeButton("no", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(getContext(),"เมื่อคุณต้องการเพิ่มถังสามารถกดปุ่ม + ด้านขวามือเพื่อทำการเพิ่มถัง",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getContext(), "เมื่อคุณต้องการเพิ่มถังสามารถกดปุ่ม + ด้านขวามือเพื่อทำการเพิ่มถัง", Toast.LENGTH_LONG).show();
                                 }
                             })
                             .show();
@@ -173,7 +175,7 @@ controller=null;
     @Override
     public void onResume() {
         super.onResume();
-        controller =AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
+        controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
         getbin();
     }
 
