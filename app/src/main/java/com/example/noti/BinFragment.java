@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.constraint.solver.widgets.Snapshot;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
-
  * A simple {@link Fragment} subclass.
  */
 public class BinFragment extends Fragment {
@@ -43,7 +43,8 @@ public class BinFragment extends Fragment {
     FirebaseAuth auth;
     ArrayList<String> binArrylist;
     LayoutAnimationController controller;
-
+    ConstraintLayout cl;
+    Intent intent;
     public BinFragment() {
         // Required empty public constructor
     }
@@ -57,7 +58,7 @@ public class BinFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
 
         binArrylist = new ArrayList<>();
-
+        cl = view.findViewById(R.id.constraint_laout);
         listViewBin = view.findViewById(R.id.bin_list_view);
         userBinList = new ArrayList<>();
         progressDialog = new ProgressDialog(getContext());
@@ -108,8 +109,10 @@ public class BinFragment extends Fragment {
                     listViewBin.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Intent intent = new Intent(getContext(), Navigationbottom.class);
-                            intent.putExtra("position", position);
+                            intent = new Intent(getContext(), Navigationbottom.class);
+                            Log.v("binName", userBinList.get(position).getBinID());
+                            intent.putExtra("binID", userBinList.get(position).getBinID());
+                            intent.putExtra("binName", userBinList.get(position).getBinName());
                             startActivity(intent);
                         }
                     });
@@ -140,27 +143,17 @@ public class BinFragment extends Fragment {
                     binArrylist.add(bin);
                 }
                 if (binArrylist.size() > 0) {
+                    if (getContext() != null) {
+                        controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_slide_from_left);
+                        cl.setBackgroundResource(R.drawable.bg);
+                        setAdaptor();
+                    }
 
-                    controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
-                    setAdaptor();
+
                 } else {
+                    cl.setBackgroundResource(R.drawable.bg_block);
                     progressDialog.cancel();
                     listViewBin.setAdapter(null);
-                    new AlertDialog.Builder(getContext())
-                            .setMessage("ตอนนี้คุณไม่ได้ทำการเชื่อมต่อถัง คุณต้องการเพิ่มถังตอนนี้หรือไม่")
-                            .setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(getContext(), "ได้ทำการเพิ่มถังเรียบร้อย", Toast.LENGTH_LONG).show();
-                                }
-                            })
-                            .setNegativeButton("no", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(getContext(), "เมื่อคุณต้องการเพิ่มถังสามารถกดปุ่ม + ด้านขวามือเพื่อทำการเพิ่มถัง", Toast.LENGTH_LONG).show();
-                                }
-                            })
-                            .show();
 
                 }
             }
@@ -175,7 +168,7 @@ public class BinFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
+        controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_slide_from_left);
         getbin();
     }
 

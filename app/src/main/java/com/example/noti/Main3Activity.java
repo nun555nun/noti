@@ -1,5 +1,6 @@
 package com.example.noti;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.view.MotionEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,8 +30,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+
+import static android.graphics.Color.BLACK;
 
 public class Main3Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -37,44 +43,73 @@ public class Main3Activity extends AppCompatActivity
     private FirebaseDatabase database;
     AlertDialog dialog;
     EditText etID;
+    EditText etName;
+    TextView tvStartDate;
+    private int day, month, year;
+    private Calendar mDate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
 
-        Toolbar toolbar =  findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mDate = Calendar.getInstance();
+
+        day = mDate.get(Calendar.DAY_OF_MONTH);
+        month = mDate.get(Calendar.MONTH);
+        year = mDate.get(Calendar.YEAR);
+
+        month += 1;
 
         database = FirebaseDatabase.getInstance();
         auth = FirebaseAuth.getInstance();
         dbRef = database.getReference();
+
+
+        dbRef = FirebaseDatabase.getInstance().getReference("User/" + auth.getCurrentUser().getUid() + "/bin");
+
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+
+                if (dataSnapshot.getChildrenCount() == 0) {
+                    new AlertDialog.Builder(Main3Activity.this)
+                            .setMessage("ตอนนี้คุณไม่ได้ทำการเชื่อมต่อถัง คุณต้องการเพิ่มถังตอนนี้หรือไม่")
+                            .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    addBin();
+                                    // Toast.makeText(Main3Activity.this, "ได้ทำการเพิ่มถังเรียบร้อย", Toast.LENGTH_LONG).show();
+                                }
+                            })
+                            .setNegativeButton("no", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(Main3Activity.this, "เมื่อคุณต้องการเพิ่มถังสามารถกดปุ่ม + ด้านขวามือเพื่อทำการเพิ่มถัง", Toast.LENGTH_LONG).show();
+                                }
+                            })
+                            .show();
+                    dbRef.removeEventListener(this);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-
-                AlertDialog.Builder mBuilder = new AlertDialog.Builder(Main3Activity.this);
-                View mview = getLayoutInflater().inflate(R.layout.dialog_add,null);
-
-                EditText etName = mview.findViewById(R.id.et_bin_name);
-                etID = mview.findViewById(R.id.et_bin_id);
-                TextView tvStartDate = mview.findViewById(R.id.tv_start_date);
-
-                Button addButton = mview.findViewById(R.id.add_button);
-
-                addButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        checkData();
-
-                    }
-                });
-                mBuilder.setView(mview);
-                dialog = mBuilder.create();
-                dialog.show();
-
+                addBin();
                /* Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
             }
@@ -119,6 +154,73 @@ public class Main3Activity extends AppCompatActivity
 
     }
 
+    private void hideKeybord() {
+        etName.setFocusable(false);
+        etName.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                etName.setFocusableInTouchMode(true);
+
+                return false;
+            }
+        });
+
+        etID.setFocusable(false);
+        etID.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                etID.setFocusableInTouchMode(true);
+
+                return false;
+            }
+        });
+
+    }
+
+    private void addBin() {
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(Main3Activity.this);
+        View mview = getLayoutInflater().inflate(R.layout.dialog_add, null);
+
+        etName = mview.findViewById(R.id.et_bin_name);
+        etID = mview.findViewById(R.id.et_bin_id);
+        tvStartDate = mview.findViewById(R.id.tv_start_date);
+
+        tvStartDate.setText(day + "/" + month + "/" + year);
+        tvStartDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(Main3Activity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        month = month + 1;
+                        tvStartDate.setText(dayOfMonth + "/" + month + "/" + year);
+                        tvStartDate.setTextColor(BLACK);
+                    }
+                }, year, month, day);
+                datePickerDialog.show();
+            }
+        });
+        hideKeybord();
+
+        Button addButton = mview.findViewById(R.id.add_button);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (etName.getText().toString().length() > 0 && etID.getText().toString().trim().length() > 0) {
+                    checkData();
+                } else {
+                    Toast.makeText(Main3Activity.this, "โปรดใส่ข้อมูลให้ครบ", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        mBuilder.setView(mview);
+        dialog = mBuilder.create();
+        dialog.show();
+    }
+
     private void checkData() {
 
         dbRef = FirebaseDatabase.getInstance().getReference("bin/");
@@ -126,19 +228,20 @@ public class Main3Activity extends AppCompatActivity
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                boolean check= false;
-                for(DataSnapshot ds :dataSnapshot.getChildren()){
-                    if(ds.getKey().equals(etID.getText().toString())){
-                       check =true;
-                       break;
+                boolean check = false;
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                    if (ds.getKey().equals(etID.getText().toString().trim())) {
+                        check = true;
+                        break;
                     }
                 }
-                if(check){
+                dbRef.removeEventListener(this);
+                if (check) {
                     setBinId();
-                }
-                else{
+                } else {
                     etID.setText("");
-                    Toast.makeText(Main3Activity.this,"ไม่มี รหัสถังนี้ในระบบ หรือ ถังยังไม่ได้เปิดใช้",Toast.LENGTH_LONG).show();
+                    Toast.makeText(Main3Activity.this, "ไม่มี รหัสถังนี้ในระบบ หรือ ถังยังไม่ได้เปิดใช้", Toast.LENGTH_LONG).show();
+
                 }
 
             }
@@ -158,26 +261,27 @@ public class Main3Activity extends AppCompatActivity
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Boolean check = true;
                 int count = (int) dataSnapshot.getChildrenCount();
-                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Map map = (Map) ds.getValue();
                     String binID = String.valueOf(map.get("binid"));
-                    if(binID.equals(etID.getText().toString())){
+                    if (binID.equals(etID.getText().toString().trim())) {
                         check = false;
                         break;
                     }
                 }
-                if(check){
+                if (check) {
                     Map binId = new HashMap();
-                    binId.put("binid",etID.getText().toString());
+                    binId.put("binid", etID.getText().toString().trim());
                     dbRef.push().setValue(binId);
-                    Toast.makeText(Main3Activity.this,"เพิ่มถังเรียบร้อย",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Main3Activity.this, "เพิ่มถังเรียบร้อย", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                     dbRef.removeEventListener(this);
-                }
-                else {
+                    setBinData();
+
+                } else {
                     dbRef.removeEventListener(this);
                     etID.setText("");
-                    Toast.makeText(Main3Activity.this,"คุณเคยเพิ่มถังนี้ไปแล้ว",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Main3Activity.this, "คุณเคยเพิ่มถังนี้ไปแล้ว", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -188,6 +292,12 @@ public class Main3Activity extends AppCompatActivity
         });
 
 
+    }
+
+    private void setBinData() {
+        dbRef = FirebaseDatabase.getInstance().getReference("bin/" + etID.getText().toString().trim());
+        dbRef.child("binName").setValue(etName.getText().toString());
+        dbRef.child("date").setValue(tvStartDate.getText().toString());
     }
 
     @Override

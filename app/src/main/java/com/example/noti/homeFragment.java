@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,12 +29,11 @@ public class homeFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        int position = getArguments().getInt("position");
-
+        String position = getArguments().getString("binID");
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
         TextView temptv = view.findViewById(R.id.temp);
         temptv.setText(position + "°C");
-//hide keybord
+        //hide keybord
         final EditText editWater = view.findViewById(R.id.editWater);
         editWater.setFocusable(false);
 
@@ -46,7 +46,7 @@ public class homeFragment extends Fragment {
                 return false;
             }
         });
-//hide keybord
+        //hide keybord
         final EditText editAir = view.findViewById(R.id.editAir);
         editAir.setFocusable(false);
         editAir.setOnTouchListener(new View.OnTouchListener() {

@@ -12,6 +12,7 @@ import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +25,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
@@ -34,6 +37,8 @@ public class Account extends AppCompatActivity {
     EditText usernameEditText;
     TextView tv_pass;
     EditText emailEditText;
+    private FirebaseDatabase database;
+    public DatabaseReference dbRef;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +48,8 @@ public class Account extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         auth = FirebaseAuth.getInstance();
+        database = FirebaseDatabase.getInstance();
+        dbRef = database.getReference("User").child(auth.getUid());
 
         tv_pass = findViewById(R.id.visible_pass);
         tv_pass.setVisibility(View.GONE);
@@ -50,7 +57,7 @@ public class Account extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password_edit_text);
         usernameEditText = findViewById(R.id.username_edit_text);
         emailEditText = findViewById(R.id.email_edit_text);
-
+        hideKeybord();
         passwordEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -71,6 +78,7 @@ public class Account extends AppCompatActivity {
 
             }
         });
+
         tv_pass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -207,6 +215,47 @@ public class Account extends AppCompatActivity {
     }
 
     private void changeUsername() {
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            dbRef.child("name").setValue(usernameEditText.getText().toString());
+            Toast.makeText(Account.this, "แก้ไข username เป็น " + usernameEditText.getText().toString() + " เรียบร้อยแล้ว", Toast.LENGTH_LONG).show();
+            usernameEditText.setText("");
+        }
+    }
+
+    private void hideKeybord() {
+        usernameEditText.setFocusable(false);
+        usernameEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                usernameEditText.setFocusableInTouchMode(true);
+
+                return false;
+            }
+        });
+
+        emailEditText.setFocusable(false);
+        emailEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                emailEditText.setFocusableInTouchMode(true);
+
+                return false;
+            }
+        });
+
+        passwordEditText.setFocusable(false);
+        passwordEditText.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                passwordEditText.setFocusableInTouchMode(true);
+
+                return false;
+            }
+        });
 
     }
 

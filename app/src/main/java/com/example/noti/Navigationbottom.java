@@ -14,6 +14,7 @@ public class Navigationbottom extends AppCompatActivity {
 
 
     Bundle bundle;
+    String binID;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -29,14 +30,14 @@ public class Navigationbottom extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
 
-                    setTitle("home");
+
                     selectedFragment = new homeFragment();
                     selectedFragment.setArguments(bundle);
                     fragmentTransaction.replace(R.id.framz, selectedFragment).commit();
 
                     return true;
                 case R.id.navigation_history:
-                    setTitle("history");
+
 
                     /*selectedFragment =  new HistoryFragment();
                     fragmentTransaction.replace(R.id.framz, selectedFragment).commit();
@@ -59,11 +60,14 @@ public class Navigationbottom extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigationbottom);
-        Intent intent = getIntent();
-        int position = intent.getIntExtra("position", 0);
-        bundle = new Bundle();
-        bundle.putInt("position", position);
 
+
+        Intent intent = getIntent();
+        binID = intent.getStringExtra("binID");
+        bundle = new Bundle();
+        bundle.putString("binID", binID);
+        String binName = intent.getStringExtra("binName");
+        setTitle(binName);
 
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);

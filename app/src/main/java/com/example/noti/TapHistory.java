@@ -32,8 +32,11 @@ public class TapHistory extends Fragment {
         viewPager = view.findViewById(R.id.viewpager_history);
 
         ViewpagerAdapter adapter = new ViewpagerAdapter(getChildFragmentManager());
-        adapter.AddFragment(new HistoryFragment(), "Histroy");
-        adapter.AddFragment(new Fragment1(), "testFragment");
+        adapter.AddFragment(new HistoryFragment(), "ในถัง");
+        adapter.AddFragment(new HistoryFragment(), "นอกถัง");
+        adapter.AddFragment(new Fragment1(), "การแจ้งเตือน");
+
+
 
 
         viewPager.setAdapter(adapter);

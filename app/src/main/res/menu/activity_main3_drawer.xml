@@ -32,16 +32,5 @@
         </menu>
 
     </item>
-    <item android:title="Item">
-        <menu>
-            <item
-                android:id="@+id/nav_item1"
-                android:title="Item"
-                android:icon="@drawable/ic_one"/>
-            <item
-                android:id="@+id/nav_item2"
-                android:title="Item"
-                android:icon="@drawable/ic_two"/>
-        </menu>
-    </item>
+
 </menu>
