@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 int xz = Integer.parseInt(x);
                 String title = "อุณหภูมิในถังไม่ได้อยู่ในช่วงที่กำหนด";
                 String message = "ทำการเติมอากาศ";
-                if(xz>60){
+                if(xz>1203245){
                     Notification notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_1_ID)
                             .setSmallIcon(R.drawable.thermometer)
                             .setContentTitle(title)

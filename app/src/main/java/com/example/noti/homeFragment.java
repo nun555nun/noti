@@ -20,21 +20,41 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Map;
 
 public class homeFragment extends Fragment {
+
+    DatabaseReference dbRef;
+    String binID;
+    TextView tvTempIn;
+    TextView tvTempOut;
+    TextView tvHumidIn;
+    TextView tvHumidOut;
+    TextView tvDateCount;
+    EditText editWater;
+    EditText editAir;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        String position = getArguments().getString("binID");
+        binID = getArguments().getString("binID");
+
         final View view = inflater.inflate(R.layout.fragment_home, container, false);
-        TextView temptv = view.findViewById(R.id.temp);
-        temptv.setText(position + "°C");
+
+        tvTempIn = view.findViewById(R.id.tv_temp_in);
+        tvTempOut = view.findViewById(R.id.tv_temp_out);
+        tvHumidIn = view.findViewById(R.id.tv_humid_in);
+        tvHumidOut = view.findViewById(R.id.tv_humid_out);
+        tvDateCount = view.findViewById(R.id.tv_date_count);
+
+        setData();
+
         //hide keybord
-        final EditText editWater = view.findViewById(R.id.editWater);
+        editWater = view.findViewById(R.id.editWater);
         editWater.setFocusable(false);
 
         editWater.setOnTouchListener(new View.OnTouchListener() {
@@ -47,7 +67,7 @@ public class homeFragment extends Fragment {
             }
         });
         //hide keybord
-        final EditText editAir = view.findViewById(R.id.editAir);
+        editAir = view.findViewById(R.id.editAir);
         editAir.setFocusable(false);
         editAir.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -108,5 +128,39 @@ public class homeFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void setData() {
+        dbRef = FirebaseDatabase.getInstance().getReference("bin/"+binID);
+
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    Map map = (Map) dataSnapshot.getValue();
+
+                    String tempIn = String.valueOf(map.get("tempIn"));
+                    String tempOut = String.valueOf(map.get("tempOut"));
+                    String humidIn = String.valueOf(map.get("humidIn"));
+                    String humidOut = String.valueOf(map.get("humidOut"));
+                    String dateCount = String.valueOf(map.get("dateCount"));
+                    String fillAir = String.valueOf(map.get("fillAir"));
+                    String fillWater = String.valueOf(map.get("fillWater"));
+
+                    tvTempIn.setText(tempIn);
+                    tvTempOut.setText(tempOut);
+                    tvDateCount.setText(dateCount);
+                    tvHumidIn.setText(humidIn);
+                    tvHumidOut.setText(humidOut);
+                    editAir.setHint(fillAir);
+                    editWater.setHint(fillWater);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
     }
 }

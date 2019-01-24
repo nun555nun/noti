@@ -28,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Map;
 
@@ -39,6 +40,7 @@ public class Account extends AppCompatActivity {
     EditText emailEditText;
     private FirebaseDatabase database;
     public DatabaseReference dbRef;
+    public static final String NODE_fcm = "fcm-token";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -194,6 +196,10 @@ public class Account extends AppCompatActivity {
     private void deleteAccount() {
         FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
+
+            String token = FirebaseInstanceId.getInstance().getToken();
+            dbRef = database.getReference(NODE_fcm + "/bin1").child(token);
+            dbRef.removeValue();
 
             user.delete()
                     .addOnCompleteListener(new OnCompleteListener<Void>() {

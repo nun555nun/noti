@@ -45,6 +45,7 @@ public class BinFragment extends Fragment {
     LayoutAnimationController controller;
     ConstraintLayout cl;
     Intent intent;
+
     public BinFragment() {
         // Required empty public constructor
     }
@@ -73,7 +74,7 @@ public class BinFragment extends Fragment {
 
 
         dbRef = FirebaseDatabase.getInstance().getReference("bin");
-
+        dbRef.keepSynced(true);
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -85,8 +86,8 @@ public class BinFragment extends Fragment {
                             Map map = (Map) data.getValue();
                             String binName = String.valueOf(map.get("binName"));
                             String startDate = String.valueOf(map.get("date"));
-                            String temperature = String.valueOf(map.get("temperature"));
-                            String humidity = String.valueOf(map.get("humidity"));
+                            String temperature = String.valueOf(map.get("tempIn"));
+                            String humidity = String.valueOf(map.get("humidIn"));
 
                             UserBin ub = new UserBin(binName, bin, temperature, humidity, startDate);
                             //Toast.makeText(getContext(), bin + " add", Toast.LENGTH_SHORT).show();
@@ -132,6 +133,7 @@ public class BinFragment extends Fragment {
     public void getbin() {
 
         dbRef = FirebaseDatabase.getInstance().getReference("User/" + auth.getCurrentUser().getUid() + "/bin");
+        dbRef.keepSynced(true);
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

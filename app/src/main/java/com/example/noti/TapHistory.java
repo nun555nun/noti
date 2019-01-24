@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,19 +28,17 @@ public class TapHistory extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        String binID = getArguments().getString("binID");
+        Log.v("zxc", "Tab    "+binID);
         View view = inflater.inflate(R.layout.fragment_tap_history, container, false);
         tabLayout = view.findViewById(R.id.tablaout_history);
         viewPager = view.findViewById(R.id.viewpager_history);
 
         ViewpagerAdapter adapter = new ViewpagerAdapter(getChildFragmentManager());
-        adapter.AddFragment(new HistoryFragment(), "ในถัง");
-        adapter.AddFragment(new HistoryFragment(), "นอกถัง");
-        adapter.AddFragment(new Fragment1(), "การแจ้งเตือน");
 
-
-
-
+        adapter.AddBinId(binID);
         viewPager.setAdapter(adapter);
+
         tabLayout.setupWithViewPager(viewPager);
 
         return view;

@@ -7,6 +7,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -20,6 +21,13 @@ public class Navigationbottom extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+            Intent intent = getIntent();
+            binID = intent.getStringExtra("binID");
+            bundle = new Bundle();
+            bundle.putString("binID", binID);
+            String binName = intent.getStringExtra("binName");
+            setTitle(binName);
 
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
@@ -44,7 +52,11 @@ public class Navigationbottom extends AppCompatActivity {
 
                     /*Intent i = new Intent(Navigationbottom.this,listtest.class);
                     startActivity(i);*/
-                    selectedFragment =  new TapHistory();
+                    selectedFragment = new TapHistory();
+                    Bundle b = new Bundle();
+                    b.putString("binID",binID);
+                    selectedFragment.setArguments(b);
+
                     fragmentTransaction.replace(R.id.framz, selectedFragment).commit();
 
                     return true;
@@ -80,6 +92,7 @@ public class Navigationbottom extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
