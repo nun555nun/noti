@@ -24,6 +24,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Map;
 
 public class homeFragment extends Fragment {
@@ -37,6 +39,8 @@ public class homeFragment extends Fragment {
     TextView tvDateCount;
     EditText editWater;
     EditText editAir;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -79,20 +83,30 @@ public class homeFragment extends Fragment {
             }
         });
 
-        Button fillWater = view.findViewById(R.id.button_water);
+        final Button fillWater = view.findViewById(R.id.button_water);
         fillWater.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 editWater.onEditorAction(EditorInfo.IME_ACTION_DONE);
-                String time = editWater.getText().toString();
+                final String time = editWater.getText().toString();
                 if (time.length() == 0 || time.startsWith("0")) {
                     Toast.makeText(getContext(), "กรุณากรอกตัวเลขตั้งแต่1ขึ้นไป", Toast.LENGTH_SHORT).show();
                 } else {
+
                     new AlertDialog.Builder(getContext())
                             .setTitle("ต้องการตั้งเวลาเติมน้ำเป็นเวลา " + time + " นาที ใช่หรือไม่?")
                             .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+
+                                    Calendar calendar = Calendar.getInstance();
+                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                    String currentTime = format.format(calendar.getTime());
+
+                                    dbRef = FirebaseDatabase.getInstance().getReference("bin/" + binID);
+                                    dbRef.child("delayWater").setValue(time);
+                                    dbRef.child("delayWaterTime").setValue(currentTime);
+
                                     Toast.makeText(getContext(), "ตั้งค่าเรียบร้อย", Toast.LENGTH_SHORT).show();
                                 }
                             })
@@ -109,7 +123,7 @@ public class homeFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                String time = editAir.getText().toString();
+                final String time = editAir.getText().toString();
                 if (time.length() == 0 || time.startsWith("0")) {
                     Toast.makeText(getContext(), "กรุณากรอกตัวเลขตั้งแต่1ขึ้นไป", Toast.LENGTH_SHORT).show();
                 } else {
@@ -118,6 +132,15 @@ public class homeFragment extends Fragment {
                             .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+
+                                    Calendar calendar = Calendar.getInstance();
+                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                    String currentTime = format.format(calendar.getTime());
+
+                                    dbRef = FirebaseDatabase.getInstance().getReference("bin/" + binID);
+                                    dbRef.child("delayAir").setValue(time);
+                                    dbRef.child("delayAirTime").setValue(currentTime);
+
                                     Toast.makeText(getContext(), "ตั้งค่าเรียบร้อย", Toast.LENGTH_SHORT).show();
                                 }
                             })
@@ -131,29 +154,29 @@ public class homeFragment extends Fragment {
     }
 
     private void setData() {
-        dbRef = FirebaseDatabase.getInstance().getReference("bin/"+binID);
+        dbRef = FirebaseDatabase.getInstance().getReference("bin/" + binID);
 
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    Map map = (Map) dataSnapshot.getValue();
+                Map map = (Map) dataSnapshot.getValue();
 
-                    String tempIn = String.valueOf(map.get("tempIn"));
-                    String tempOut = String.valueOf(map.get("tempOut"));
-                    String humidIn = String.valueOf(map.get("humidIn"));
-                    String humidOut = String.valueOf(map.get("humidOut"));
-                    String dateCount = String.valueOf(map.get("dateCount"));
-                    String fillAir = String.valueOf(map.get("fillAir"));
-                    String fillWater = String.valueOf(map.get("fillWater"));
+                String tempIn = String.valueOf(map.get("tempIn"));
+                String tempOut = String.valueOf(map.get("tempOut"));
+                String humidIn = String.valueOf(map.get("humidIn"));
+                String humidOut = String.valueOf(map.get("humidOut"));
+                String dateCount = String.valueOf(map.get("dateCount"));
+                String fillAir = String.valueOf(map.get("delayAir"));
+                String fillWater = String.valueOf(map.get("delayWater"));
 
-                    tvTempIn.setText(tempIn);
-                    tvTempOut.setText(tempOut);
-                    tvDateCount.setText(dateCount);
-                    tvHumidIn.setText(humidIn);
-                    tvHumidOut.setText(humidOut);
-                    editAir.setHint(fillAir);
-                    editWater.setHint(fillWater);
+                tvTempIn.setText(tempIn);
+                tvTempOut.setText(tempOut);
+                tvDateCount.setText(dateCount);
+                tvHumidIn.setText(humidIn);
+                tvHumidOut.setText(humidOut);
+                editAir.setHint(fillAir);
+                editWater.setHint(fillWater);
             }
 
             @Override
