@@ -15,7 +15,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class loginfirebase extends AppCompatActivity {
+public class register extends AppCompatActivity {
     private String nameString, emailString, passwordString;
     private FirebaseAuth firebaseAuth;
     private ProgressDialog progressDialog;
@@ -65,7 +65,7 @@ public class loginfirebase extends AppCompatActivity {
                 if (!nameString.isEmpty() && !emailString.isEmpty() && passwordString.length()>=6) {
                     saveValueToFirebase();
                 } else {
-                    Toast.makeText(loginfirebase.this,"โปรดกรอกข้อมูลให้ครบ",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(register.this,"โปรดกรอกข้อมูลให้ครบ",Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -76,7 +76,7 @@ public class loginfirebase extends AppCompatActivity {
 
     private void saveValueToFirebase() {
 
-        progressDialog = new ProgressDialog(loginfirebase.this);
+        progressDialog = new ProgressDialog(register.this);
         progressDialog.setTitle("Please Wait ...");
         progressDialog.show();
 
@@ -90,13 +90,13 @@ public class loginfirebase extends AppCompatActivity {
 
                         if (task.isSuccessful()) {
                             //Success
-                            Toast.makeText(loginfirebase.this, "Register Success",
+                            Toast.makeText(register.this, "Register Success",
                                     Toast.LENGTH_SHORT).show();
-                            loginfirebase.this.getSupportFragmentManager().popBackStack();
+                            register.this.getSupportFragmentManager().popBackStack();
                             finish();
                         } else {
                             //Have Error
-                            Toast.makeText(loginfirebase.this, "Cannot Register Please Try Again Register False Because " + task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(register.this, "Cannot Register Please Try Again Register False Because " + task.getException().getMessage(),Toast.LENGTH_SHORT).show();
 
                         }
                     }

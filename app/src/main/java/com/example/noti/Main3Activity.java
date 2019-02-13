@@ -42,11 +42,12 @@ public class Main3Activity extends AppCompatActivity
     private FirebaseAuth auth;
     private FirebaseDatabase database;
     AlertDialog dialog;
-    EditText etID;
+    TextView etID;
     EditText etName;
     TextView tvStartDate;
     private int day, month, year;
     private Calendar mDate;
+    String binIDFromQR;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +56,11 @@ public class Main3Activity extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        Intent i = getIntent();
+        binIDFromQR = i.getStringExtra("binID");
+
 
         mDate = Calendar.getInstance();
 
@@ -77,23 +83,27 @@ public class Main3Activity extends AppCompatActivity
 
 
                 if (dataSnapshot.getChildrenCount() == 0) {
-                    new AlertDialog.Builder(Main3Activity.this)
-                            .setMessage("ตอนนี้คุณไม่ได้ทำการเชื่อมต่อถัง คุณต้องการเพิ่มถังตอนนี้หรือไม่")
-                            .setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    addBin();
-                                    // Toast.makeText(Main3Activity.this, "ได้ทำการเพิ่มถังเรียบร้อย", Toast.LENGTH_LONG).show();
-                                }
-                            })
-                            .setNegativeButton("no", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(Main3Activity.this, "เมื่อคุณต้องการเพิ่มถังสามารถกดปุ่ม + ด้านขวามือเพื่อทำการเพิ่มถัง", Toast.LENGTH_LONG).show();
-                                }
-                            })
-                            .show();
-                    dbRef.removeEventListener(this);
+                    if (binIDFromQR == null) {
+                        new AlertDialog.Builder(Main3Activity.this)
+                                .setMessage("ตอนนี้คุณไม่ได้ทำการเชื่อมต่อถัง คุณต้องการเพิ่มถังตอนนี้หรือไม่")
+                                .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent i = new Intent(Main3Activity.this, QRMainActivity.class);
+                                        startActivity(i);
+                                        // Toast.makeText(Main3Activity.this, "ได้ทำการเพิ่มถังเรียบร้อย", Toast.LENGTH_LONG).show();
+                                    }
+                                })
+                                .setNegativeButton("no", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Toast.makeText(Main3Activity.this, "เมื่อคุณต้องการเพิ่มถังสามารถกดปุ่ม + ด้านขวามือเพื่อทำการเพิ่มถัง", Toast.LENGTH_LONG).show();
+                                    }
+                                })
+                                .show();
+                        dbRef.removeEventListener(this);
+                    }
+
                 }
             }
 
@@ -108,8 +118,10 @@ public class Main3Activity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent i = new Intent(Main3Activity.this, QRMainActivity.class);
+                startActivity(i);
 
-                addBin();
+
                /* Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();*/
             }
@@ -144,7 +156,9 @@ public class Main3Activity extends AppCompatActivity
 
             }
         });
-
+        if (binIDFromQR != null) {
+            checkData();
+        }
 
         setTitle("หน้าหลัก");
         BinFragment fragment = new BinFragment();
@@ -166,26 +180,19 @@ public class Main3Activity extends AppCompatActivity
             }
         });
 
-        etID.setFocusable(false);
-        etID.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                etID.setFocusableInTouchMode(true);
-
-                return false;
-            }
-        });
 
     }
 
-    private void addBin() {
+    private void addDataBin() {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(Main3Activity.this);
         View mview = getLayoutInflater().inflate(R.layout.dialog_add, null);
 
         etName = mview.findViewById(R.id.et_bin_name);
         etID = mview.findViewById(R.id.et_bin_id);
         tvStartDate = mview.findViewById(R.id.tv_start_date);
+        if (binIDFromQR.length()>0){
+            etID.setText(binIDFromQR);
+        }
 
         tvStartDate.setText(day + "/" + month + "/" + year);
         tvStartDate.setOnClickListener(new View.OnClickListener() {
@@ -209,8 +216,11 @@ public class Main3Activity extends AppCompatActivity
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (etName.getText().toString().length() > 0 && etID.getText().toString().trim().length() > 0) {
-                    checkData();
+                if (etName.getText().toString().length() > 0 && binIDFromQR.trim().length() > 0) {
+                    dialog.dismiss();
+                    setUserBin();
+
+
                 } else {
                     Toast.makeText(Main3Activity.this, "โปรดใส่ข้อมูลให้ครบ", Toast.LENGTH_SHORT).show();
                 }
@@ -218,8 +228,33 @@ public class Main3Activity extends AppCompatActivity
         });
         mBuilder.setView(mview);
         dialog = mBuilder.create();
+        dialog.setCanceledOnTouchOutside(false);
         dialog.show();
     }
+
+    private void setUserBin() {
+
+        dbRef = FirebaseDatabase.getInstance().getReference("User/" + auth.getCurrentUser().getUid() + "/bin");
+
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Map binId = new HashMap();
+                binId.put("binid", binIDFromQR.trim());
+                dbRef.push().setValue(binId);
+                dbRef.removeEventListener(this);
+                setBinData();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
 
     private void checkData() {
 
@@ -230,16 +265,15 @@ public class Main3Activity extends AppCompatActivity
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean check = false;
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    if (ds.getKey().equals(etID.getText().toString().trim())) {
+                    if (ds.getKey().equals(binIDFromQR.trim())) {
                         check = true;
                         break;
                     }
                 }
                 dbRef.removeEventListener(this);
                 if (check) {
-                    setBinId();
+                    checkBinId();
                 } else {
-                    etID.setText("");
                     Toast.makeText(Main3Activity.this, "ไม่มี รหัสถังนี้ในระบบ หรือ ถังยังไม่ได้เปิดใช้", Toast.LENGTH_LONG).show();
 
                 }
@@ -253,7 +287,7 @@ public class Main3Activity extends AppCompatActivity
         });
     }
 
-    private void setBinId() {
+    private void checkBinId() {
         dbRef = FirebaseDatabase.getInstance().getReference("User/" + auth.getCurrentUser().getUid() + "/bin");
 
         dbRef.addValueEventListener(new ValueEventListener() {
@@ -264,23 +298,17 @@ public class Main3Activity extends AppCompatActivity
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Map map = (Map) ds.getValue();
                     String binID = String.valueOf(map.get("binid"));
-                    if (binID.equals(etID.getText().toString().trim())) {
+                    if (binID.equals(binIDFromQR.trim())) {
                         check = false;
                         break;
                     }
                 }
                 if (check) {
-                    Map binId = new HashMap();
-                    binId.put("binid", etID.getText().toString().trim());
-                    dbRef.push().setValue(binId);
-                    Toast.makeText(Main3Activity.this, "เพิ่มถังเรียบร้อย", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
                     dbRef.removeEventListener(this);
-                    setBinData();
+                    addDataBin();
 
                 } else {
                     dbRef.removeEventListener(this);
-                    etID.setText("");
                     Toast.makeText(Main3Activity.this, "คุณเคยเพิ่มถังนี้ไปแล้ว", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -295,9 +323,24 @@ public class Main3Activity extends AppCompatActivity
     }
 
     private void setBinData() {
-        dbRef = FirebaseDatabase.getInstance().getReference("bin/" + etID.getText().toString().trim());
-        dbRef.child("binName").setValue(etName.getText().toString());
-        dbRef.child("date").setValue(tvStartDate.getText().toString());
+
+        dbRef = FirebaseDatabase.getInstance().getReference("bin/" + binIDFromQR.trim());
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                dbRef.child("binName").setValue(etName.getText().toString());
+                dbRef.child("date").setValue(tvStartDate.getText().toString());
+                Toast.makeText(Main3Activity.this, "เพิ่มถังเรียบร้อย", Toast.LENGTH_SHORT).show();
+                dbRef.removeEventListener(this);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
     }
 
     @Override
@@ -334,7 +377,7 @@ public class Main3Activity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_slideshow) {
-            Intent i = new Intent(Main3Activity.this, MainActivity.class);
+            Intent i = new Intent(Main3Activity.this, QRMainActivity.class);
             startActivity(i);
         } else if (id == R.id.nav_share) {
             Intent i = new Intent(Main3Activity.this, Account.class);
@@ -364,7 +407,7 @@ public class Main3Activity extends AppCompatActivity
 
 
                             String s = auth.getUid();
-                            //Toast.makeText(MainActivity.this,s+ " Logout",Toast.LENGTH_LONG).show();
+
                             Intent intent = new Intent(Main3Activity.this, login.class);
                             auth.signOut();
                             startActivity(intent);

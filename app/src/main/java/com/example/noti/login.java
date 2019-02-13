@@ -104,10 +104,15 @@ public class login extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
 
         if (auth.getCurrentUser() != null) {
+            if(auth.getCurrentUser().isEmailVerified()){
+                Intent intent = new Intent(login.this, Main3Activity.class);
+                startActivity(intent);
+                finish();
+            }
+            else{
 
-            Intent intent = new Intent(login.this, Main3Activity.class);
-            startActivity(intent);
-            finish();
+            }
+
         }
         buttonlogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -156,7 +161,7 @@ public class login extends AppCompatActivity {
         regiter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(login.this, loginfirebase.class);
+                Intent intent = new Intent(login.this, register.class);
                 startActivity(intent);
 
             }

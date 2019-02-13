@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.noti">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -10,6 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".NotificationActivity"></activity>
+        <activity android:name=".QRMainActivity" />
         <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait"
@@ -28,7 +32,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
         <activity
-            android:name=".loginfirebase"
+            android:name=".register"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.FullScreen" />
 
@@ -59,7 +63,11 @@
             android:windowSoftInputMode="stateHidden" />
         <activity android:name=".listtest" />
         <activity android:name=".ResetPassword" />
-        <activity android:name=".Account"></activity>
+        <activity android:name=".Account" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>
