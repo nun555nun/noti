@@ -33,7 +33,7 @@ public class Navigationbottom extends AppCompatActivity {
 
 
             //setname toolbar
-
+            Bundle b = new Bundle();
             Fragment selectedFragment;
             switch (item.getItemId()) {
                 case R.id.navigation_home:
@@ -46,14 +46,8 @@ public class Navigationbottom extends AppCompatActivity {
                     return true;
                 case R.id.navigation_history:
 
-
-                    /*selectedFragment =  new HistoryFragment();
-                    fragmentTransaction.replace(R.id.framz, selectedFragment).commit();
-
-                    /*Intent i = new Intent(Navigationbottom.this,listtest.class);
-                    startActivity(i);*/
                     selectedFragment = new TapHistory();
-                    Bundle b = new Bundle();
+
                     b.putString("binID",binID);
                     selectedFragment.setArguments(b);
 
@@ -61,6 +55,13 @@ public class Navigationbottom extends AppCompatActivity {
 
                     return true;
                 case R.id.navigation_notifications:
+
+                    selectedFragment = new SettingBinFragment();
+
+                    b.putString("binID",binID);
+                    selectedFragment.setArguments(b);
+
+                    fragmentTransaction.replace(R.id.framz, selectedFragment).commit();
 
                     return true;
             }

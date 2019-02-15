@@ -34,18 +34,6 @@ public class Fragment1 extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        final EditText e1 = getView().findViewById(R.id.edittest);
-        final EditText e2 = getView().findViewById(R.id.edittest2);
-        Button b = getView().findViewById(R.id.test);
-        final TextView t = getView().findViewById(R.id.testtext);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String ee1 = e1.getText().toString();
-                String ee2 = e2.getText().toString();
-                t.setText(ee1+" "+ee2);
 
-            }
-        });
     }
 }
