@@ -369,11 +369,9 @@ public class Main3Activity extends AppCompatActivity
 
 
         } else if (id == R.id.nav_gallery) {
-            setTitle("เทส");
-            Fragment1 fragment = new Fragment1();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fram, fragment);
-            fragmentTransaction.commit();
+            setTitle("การแจ้งเตือน");
+            Intent i = new Intent(Main3Activity.this, Main4Activity.class);
+            startActivity(i);
 
 
         } else if (id == R.id.nav_slideshow) {

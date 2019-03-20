@@ -151,6 +151,8 @@ public class login extends AppCompatActivity {
                                         Intent intent = new Intent(login.this, Main3Activity.class);
                                         startActivity(intent);
                                         finish();
+                                        overridePendingTransition(R.anim.slide_in_bottom, R.anim.slide_out_top);
+
                                     }
                                 }
                             });
@@ -163,7 +165,7 @@ public class login extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(login.this, register.class);
                 startActivity(intent);
-
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }
         });
 
@@ -172,9 +174,10 @@ public class login extends AppCompatActivity {
             public void onClick(View v) {
                 Intent i = new Intent(login.this, ResetPassword.class);
                 startActivity(i);
-
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             }
         });
 
     }
+
 }

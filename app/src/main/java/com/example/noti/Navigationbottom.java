@@ -1,6 +1,8 @@
 package com.example.noti;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -10,6 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.net.InetAddress;
 
 public class Navigationbottom extends AppCompatActivity {
 
@@ -92,6 +97,13 @@ public class Navigationbottom extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+
+        /*if (isNetworkConnected()) {
+            Toast.makeText(Navigationbottom.this, "เย่", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(Navigationbottom.this, "เปิดเน็ตซะ", Toast.LENGTH_SHORT).show();
+        }*/
     }
 
     @Override
@@ -100,5 +112,21 @@ public class Navigationbottom extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("google.com");
+            //You can replace it with your name
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null;
     }
 }

@@ -1,7 +1,9 @@
 package com.example.noti;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +26,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Map;
@@ -32,13 +35,18 @@ public class homeFragment extends Fragment {
 
     DatabaseReference dbRef;
     String binID;
-    TextView tvTempIn;
-    TextView tvTempOut;
-    TextView tvHumidIn;
-    TextView tvHumidOut;
+
+    TextView tvTemp;
+    TextView tvHumid;
+
     TextView tvDateCount;
-    EditText editWater;
-    EditText editAir;
+    TextView tvTime;
+    TextView tvStatusAir;
+    TextView tvStatusWater;
+    TextView tvST;
+    TextView tvSD;
+    TextView tvLT;
+    TextView tvLD;
 
 
     @Nullable
@@ -47,108 +55,26 @@ public class homeFragment extends Fragment {
 
         binID = getArguments().getString("binID");
 
-        final View view = inflater.inflate(R.layout.fragment_home, container, false);
+        final View view = inflater.inflate(R.layout.new_home, container, false);
 
-        tvTempIn = view.findViewById(R.id.tv_temp_in);
-        tvTempOut = view.findViewById(R.id.tv_temp_out);
-        tvHumidIn = view.findViewById(R.id.tv_humid_in);
-        tvHumidOut = view.findViewById(R.id.tv_humid_out);
+        tvTemp = view.findViewById(R.id.tv_temp);
+        tvHumid = view.findViewById(R.id.tv_humid);
         tvDateCount = view.findViewById(R.id.tv_date_count);
+        tvTime = view.findViewById(R.id.tv_time);
+        tvStatusAir = view.findViewById(R.id.tv_air_status);
+        tvStatusWater = view.findViewById(R.id.tv_water_status);
 
+        tvSD = view.findViewById(R.id.tv_sd);
+        tvST = view.findViewById(R.id.tv_st);
+        tvLD = view.findViewById(R.id.tv_ld);
+        tvLT = view.findViewById(R.id.tv_lt);
+
+        if (isNetworkConnected()) {
+            Toast.makeText(getContext(), "เย่", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "เปิดเน็ตซะ", Toast.LENGTH_SHORT).show();
+        }
         setData();
-
-        //hide keybord
-        editWater = view.findViewById(R.id.editWater);
-        editWater.setFocusable(false);
-
-        editWater.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                editWater.setFocusableInTouchMode(true);
-
-                return false;
-            }
-        });
-        //hide keybord
-        editAir = view.findViewById(R.id.editAir);
-        editAir.setFocusable(false);
-        editAir.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                editAir.setFocusableInTouchMode(true);
-
-                return false;
-            }
-        });
-
-        final Button fillWater = view.findViewById(R.id.button_water);
-        fillWater.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editWater.onEditorAction(EditorInfo.IME_ACTION_DONE);
-                final String time = editWater.getText().toString();
-                if (time.length() == 0 || time.startsWith("0")) {
-                    Toast.makeText(getContext(), "กรุณากรอกตัวเลขตั้งแต่1ขึ้นไป", Toast.LENGTH_SHORT).show();
-                } else {
-
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("ต้องการตั้งเวลาเติมน้ำเป็นเวลา " + time + " นาที ใช่หรือไม่?")
-                            .setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    Calendar calendar = Calendar.getInstance();
-                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-                                    String currentTime = format.format(calendar.getTime());
-
-                                    dbRef = FirebaseDatabase.getInstance().getReference("bin/" + binID);
-                                    dbRef.child("delayWater").setValue(time);
-                                    dbRef.child("delayWaterTime").setValue(currentTime);
-
-                                    Toast.makeText(getContext(), "ตั้งค่าเรียบร้อย", Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .setNegativeButton("no", null)
-                            .show();
-                }
-            }
-        });
-
-
-        Button fillAir = view.findViewById(R.id.button_air);
-
-        fillAir.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final String time = editAir.getText().toString();
-                if (time.length() == 0 || time.startsWith("0")) {
-                    Toast.makeText(getContext(), "กรุณากรอกตัวเลขตั้งแต่1ขึ้นไป", Toast.LENGTH_SHORT).show();
-                } else {
-                    new AlertDialog.Builder(getContext())
-                            .setTitle("ต้องการตั้งเวลาเติมอากาศเป็นเวลา " + time + " นาที ใช่หรือไม่?")
-                            .setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-
-                                    Calendar calendar = Calendar.getInstance();
-                                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-                                    String currentTime = format.format(calendar.getTime());
-
-                                    dbRef = FirebaseDatabase.getInstance().getReference("bin/" + binID);
-                                    dbRef.child("delayAir").setValue(time);
-                                    dbRef.child("delayAirTime").setValue(currentTime);
-
-                                    Toast.makeText(getContext(), "ตั้งค่าเรียบร้อย", Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .setNegativeButton("no", null)
-                            .show();
-                }
-            }
-        });
 
         return view;
     }
@@ -161,22 +87,33 @@ public class homeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 Map map = (Map) dataSnapshot.getValue();
-
-                String tempIn = String.valueOf(map.get("tempIn"));
-                String tempOut = String.valueOf(map.get("tempOut"));
-                String humidIn = String.valueOf(map.get("humidIn"));
-                String humidOut = String.valueOf(map.get("humidOut"));
                 String dateCount = String.valueOf(map.get("dateCount"));
-                String fillAir = String.valueOf(map.get("delayAir"));
-                String fillWater = String.valueOf(map.get("delayWater"));
+                String temp = String.valueOf(map.get("tempIn"));
 
-                tvTempIn.setText(tempIn);
-                tvTempOut.setText(tempOut);
+                String humid = String.valueOf(map.get("humidIn"));
+
+                String time = String.valueOf(map.get("time"));
+                String statusAir = String.valueOf(map.get("statusAir"));
+                String statusWater = String.valueOf(map.get("statusWater"));
+
+                String st = String.valueOf(map.get("time"));
+                String sd = String.valueOf(map.get("time"));
+                String lt = String.valueOf(map.get("time"));
+                String ld = String.valueOf(map.get("time"));
+
+                tvTemp.setText(temp);
+
                 tvDateCount.setText(dateCount);
-                tvHumidIn.setText(humidIn);
-                tvHumidOut.setText(humidOut);
-                editAir.setHint(fillAir);
-                editWater.setHint(fillWater);
+                tvHumid.setText(humid);
+                tvTime.setText(time);
+                tvStatusAir.setText(statusAir);
+                tvStatusWater.setText(statusWater);
+
+                tvST.setText(st);
+                tvSD.setText(sd);
+                tvLT.setText(lt);
+                tvLD.setText(ld);
+
             }
 
             @Override
@@ -185,5 +122,22 @@ public class homeFragment extends Fragment {
             }
         });
 
+    }
+
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("google.com");
+            //You can replace it with your name
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null;
     }
 }

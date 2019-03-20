@@ -24,15 +24,12 @@ public class ViewpagerAdapter extends FragmentPagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        // return fragmentListTitle.get(position);
+
         switch (position) {
             case 0:
                 return "ในถัง";
 
             case 1:
-                return "นอกถัง";
-
-            case 2:
                 return "การแจ้งเตือน";
 
         }
@@ -52,16 +49,9 @@ public class ViewpagerAdapter extends FragmentPagerAdapter {
                 fragment.setArguments(b);
                 break;
             case 1:
-                fragment = new HistoryFragment();
+                fragment = new HistoryNotificationFragment();
                 b = new Bundle();
-                Log.v("zxc","1    "+binID);
-                b.putString("binID",binID);
-                fragment.setArguments(b);
-                break;
-            case 2:
-                fragment = new Fragment1();
-                b = new Bundle();
-                b.putString("binID", "bin1");
+                b.putString("binID", binID);
                 fragment.setArguments(b);
                 break;
         }
@@ -72,7 +62,7 @@ public class ViewpagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         //return fragmentListTitle.size();
-        return 3;
+        return 2;
     }
     public void AddBinId(String bin) {
         binID=bin;

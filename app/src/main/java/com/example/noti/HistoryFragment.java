@@ -11,8 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LayoutAnimationController;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -34,8 +37,11 @@ public class HistoryFragment extends Fragment {
     DatabaseReference dbRef;
     public ProgressDialog progressDialog;
     List<LogDHT> logDHTList;
-
+    private Spinner dateSpinner;
+    private Spinner timeSpinner;
     String binID;
+    String[] date;
+    String[] time;
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -44,12 +50,44 @@ public class HistoryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_history, container, false);
+        dateSpinner = view.findViewById(R.id.date_spinner);
+        timeSpinner = view.findViewById(R.id.time_spinner);
+
         binID = getArguments().getString("binID");
+        getDate();
+        ArrayAdapter<String> adapterDate = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_spinner_dropdown_item, date);
+
+        dateSpinner.setAdapter(adapterDate);
+        getTime();
+        dateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                getTime();
+                time[0] = String.valueOf(position);
+                ArrayAdapter<String> adapterTime = new ArrayAdapter<String>(getContext(),
+                        android.R.layout.simple_spinner_dropdown_item, time);
+                timeSpinner.setAdapter(adapterTime);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        Button searchButton = view.findViewById(R.id.search_log_button);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "ค้นหาวันที่" + dateSpinner.getSelectedItem().toString() + "เวลา" + timeSpinner.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
         Log.v("zxc", "--" + binID + "--");
         //binID = "bin1";
         dbRef = FirebaseDatabase.getInstance().getReference("bin/" + binID + "/logDHT");
-        View view = inflater.inflate(R.layout.fragment_history, container, false);
+
         listViewLogDHT = view.findViewById(R.id.list_view_logDHT);
         logDHTList = new ArrayList<>();
         progressDialog = new ProgressDialog(getContext());
@@ -58,6 +96,25 @@ public class HistoryFragment extends Fragment {
         setAdaptor();
 
         return view;
+    }
+
+    private void getTime() {
+        if(dateSpinner.getSelectedItem().toString().equals("00/00/0000")){
+            time = new String[]{"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"
+                    , "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+        }
+        else {
+            time = new String[]{"14", "15", "16", "17", "18", "19", "20", "21", "22", "23"};
+        }
+
+    }
+
+    private void getDate() {
+        date = new String[]{"00/00/0000", "11/11/1111", "33/33/3333", "44/44/4444", "55/55/5555",
+                "00/00/0000", "11/11/1111", "33/33/3333", "44/44/4444", "55/55/5555",
+                "00/00/0000", "11/11/1111", "33/33/3333", "44/44/4444", "55/55/5555"
+        };
+
     }
 
     @Override
@@ -79,10 +136,9 @@ public class HistoryFragment extends Fragment {
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if(getContext()==null){
+                if (getContext() == null) {
                     dbRef.removeEventListener(this);
-                }
-                else {
+                } else {
                     LayoutAnimationController controller = AnimationUtils.loadLayoutAnimation(getContext(), R.anim.layout_fall_down);
                     logDHTList.clear();
                     for (DataSnapshot logDHTSnapshot : dataSnapshot.getChildren()) {
@@ -100,7 +156,6 @@ public class HistoryFragment extends Fragment {
                 }
 
 
-
             }
 
             @Override
@@ -109,4 +164,6 @@ public class HistoryFragment extends Fragment {
             }
         });
     }
+
+
 }
