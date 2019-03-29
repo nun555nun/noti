@@ -38,6 +38,8 @@ import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.Map;
 
+import es.dmoral.toasty.Toasty;
+
 public class Account extends AppCompatActivity {
     public FirebaseAuth auth;
     EditText passwordEditText;
@@ -195,7 +197,7 @@ public class Account extends AppCompatActivity {
                     builder.show();
 
                 } else {
-                    Toast.makeText(Account.this, "กรุณากรอกรหัสผ่าน 6 ตัวอักษรขึ้นไป", Toast.LENGTH_SHORT).show();
+                    Toasty.warning(Account.this, "กรุณากรอกรหัสผ่าน 6 ตัวอักษรขึ้นไป", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -207,7 +209,7 @@ public class Account extends AppCompatActivity {
                 if (usernameEditText.length() > 0) {
                     changeUsername();
                 } else {
-                    Toast.makeText(Account.this, "กรุณากรอก Username", Toast.LENGTH_SHORT).show();
+                    Toasty.error(Account.this, "กรุณากรอก Username", Toast.LENGTH_SHORT).show();
                 }
             }
         });
